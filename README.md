@@ -29,7 +29,7 @@ A single-user, self-hosted web app starter built with Rust, Axum, Askama, HTMX, 
 ### Prerequisites
 
 - Rust 1.96.0+
-- [Taskfile](https://taskfile.dev) (`cargo install task`)
+- [Taskfile](https://taskfile.dev)
 - Tailwind CSS CLI v4 (for CSS builds)
 - [prek](https://prek.j178.dev) (`cargo install prek`) — Git hook manager (pre-commit compatible)
 - [djlint](https://djlint.org) (`pip install djlint`) — HTML template formatter
