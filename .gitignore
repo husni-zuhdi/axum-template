@@ -1,0 +1,5 @@
+/target
+*env
+/static/styles.css
+*service_account.json
+.DS_Store

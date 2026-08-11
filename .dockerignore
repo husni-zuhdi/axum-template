@@ -1,0 +1,11 @@
+target
+Dockerfile
+.dockerignore
+.git
+.github
+.gitignore
+tarpaulin-report.html
+.env
+.env.example
+**/.DS_Store
+*service_account.json

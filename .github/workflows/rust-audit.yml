@@ -1,0 +1,28 @@
+name: Rust Security Audit
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  push:
+    branches-ignore:
+      - 'main'
+    pull_request:
+      types:
+        - opened
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**.rs'
+      - '.github/workflows/rust-audit.yml'
+
+jobs:
+  rust_security_audit:
+    name: Rust Security Audit
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v7
+    - uses: EmbarkStudios/cargo-deny-action@v2
+      with:
+        rust-version: "1.96.0"
+        log-level: warn
+        command: check all
+        arguments: "--all-features --locked"

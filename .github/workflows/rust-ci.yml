@@ -1,0 +1,71 @@
+name: Rust Continuous Integration
+
+on:
+  push:
+    branches-ignore:
+      - 'main'
+    pull_request:
+      types:
+        - opened
+        - synchronize
+
+env:
+  CARGO_TERM_COLOR: "always"
+  CARGO_INCREMENTAL: 0
+  CARGO_PROFILE_DEV_DEBUG: 0
+  CARGO_PROFILE_DEV_STRIP: "debuginfo"
+  SCCACHE_GHA_ENABLED: "true"
+  RUSTC_WRAPPER: "sccache"
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-22.04
+    steps:
+    - &checkout
+      name: Checkout repository
+      uses: actions/checkout@v7
+    - &install-rust
+      name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@1.96.0
+      with:
+        components: "rustfmt, clippy"
+    - &set-sccache
+      name: Setup sccache
+      uses: mozilla-actions/sccache-action@v0.0.10
+      with:
+        version: "v0.12.0"
+    - uses: taiki-e/install-action@v2
+      with:
+        tool: cargo-nextest@0.9.140
+    - run: cargo nextest run --locked
+
+  format:
+    name: Formatting
+    runs-on: ubuntu-22.04
+    steps:
+    - *checkout
+    - *install-rust
+    - run: cargo fmt --check
+
+  clippy:
+    name: Clippy Linting
+    runs-on: ubuntu-22.04
+    steps:
+    - *checkout
+    - *install-rust
+    - *set-sccache
+    - run: cargo clippy --locked -- -D warnings
+
+  # Disabled for now
+  # coverage:
+  #   name: Code coverage
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #   - *checkout
+  #   - *install-rust
+  #   - uses: taiki-e/install-action@v2
+  #     with:
+  #       tool: cargo-tarpaulin@0.34.1
+  #   - *set-sccache
+  #   - run: cargo tarpaulin --ignore-tests --follow-exec --locked --coveralls ${{ secrets.COVERALLS_REPO_TOKEN }}

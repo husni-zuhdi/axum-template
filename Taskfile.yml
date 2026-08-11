@@ -1,0 +1,75 @@
+version: '3'
+dotenv:
+  - '.env'
+
+env:
+  RUSTC_WRAPPER: sccache
+  PROJECT_NAME: axum-template
+
+tasks:
+  lint:
+    summary: Run lint with clippy
+    cmds:
+      # - cargo clippy -- -D clippy::pedantic -D clippy::nursery
+      - cargo clippy -- -D clippy::nursery
+  test:
+    summary: Run unit test with logs
+    cmds:
+      - RUST_LOG=debug cargo nextest run
+  coverage:
+    summary: Run tarpaulin for code coverage and produce html output
+    cmds:
+      - cargo tarpaulin --ignore-tests --follow-exec --out Html
+  fmt:
+    summary: Run rust formatting with fmt
+    cmds:
+      - cargo fmt
+  audit:
+    summary: Run rust audit with cargo-deny
+    cmds:
+      - cargo deny check all
+  hooks:
+    summary: Run all pre-commit hooks on tracked files
+    cmds:
+      - prek run --all-files
+  build:css:
+    summary: Build Tailwind CSS
+    cmds:
+      - tailwindcss -i static/input.css -o static/styles.css --minify
+  dev:
+    summary: Run in development mode with Tailwind watch + cargo watch
+    cmds:
+      - tailwindcss -i static/input.css -o static/styles.css --watch & cargo watch -s 'cargo run'
+  run:
+    summary: Run application with hot-reload
+    cmds:
+      - cargo watch -s 'cargo run -- -release'
+
+  docker-build:
+    summary: Build Docker Image
+    cmds:
+      - docker build -t $PROJECT_NAME:$(cargo pkgid | cut -d "#" -f2) .
+  docker-run:
+    summary: Run Docker Image
+    cmds:
+      - docker run --name $PROJECT_NAME-$(date +'%Y-%m-%d-%H-%M-%S') -it -d -p 8080:8080 --env-file=.env $PROJECT_NAME:$(cargo pkgid | cut -d "#" -f2)
+  docker-compose-up:
+    summary: Run application in docker compose with database
+    deps:
+      - docker-build
+    cmds:
+      - |
+        # Reading APP_ADDRESS and APP_PORT from .env
+        export $(cat .env | xargs)
+        export SVC_VERSION=$(cargo pkgid | cut -d "#" -f2)
+        cd build
+        docker compose up -d
+  docker-compose-down:
+    summary: Teardown docker compose
+    cmds:
+      - |
+        # Reading APP_ADDRESS and APP_PORT from .env
+        export $(cat .env | xargs)
+        export SVC_VERSION=$(cargo pkgid | cut -d "#" -f2)
+        cd build
+        docker compose down

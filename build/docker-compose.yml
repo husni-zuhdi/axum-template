@@ -1,0 +1,9 @@
+name: axum-template
+
+services:
+  app:
+    image: "axum-template:${SVC_VERSION}"
+    env_file:
+      - "../.env"
+    ports:
+      - ${APP_PORT}:${APP_PORT}

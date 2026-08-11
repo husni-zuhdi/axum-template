@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1 class="text-2xl font-bold mb-6">Settings</h1>
+    {% if !error.is_empty() %}
+        <div id="settings-error"
+             class="mb-4 p-4 rounded-lg text-sm font-medium bg-red-100 text-red-800 border border-red-200">{{ error }}</div>
+    {% endif %}
+    <section class="bg-white p-6 rounded-lg shadow-sm">
+        <h2 class="text-lg font-semibold mb-4">Password</h2>
+        <p class="text-xs text-gray-500 mb-4">
+            Change the login password. The new password applies on your next
+            login; this session stays signed in.
+        </p>
+        <div id="password-form">
+            {% include "password_form.html" %}
+        </div>
+    </section>
+{% endblock %}

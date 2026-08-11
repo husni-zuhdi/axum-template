@@ -1,0 +1,24 @@
+[[repos]]
+repo = "https://github.com/pre-commit/pre-commit-hooks"
+rev = "v6.0.0"
+hooks = [
+  { id = "check-yaml" },
+  { id = "check-toml" },
+  { id = "check-json" },
+  { id = "end-of-file-fixer" },
+  { id = "check-added-large-files" },
+]
+
+[[repos]]
+repo = "local"
+hooks = [
+  { id = "fmt", name = "cargo fmt", language = "system", entry = "cargo fmt", types_or = ["rust"], pass_filenames = false },
+  { id = "djlint", name = "djlint (HTML)", language = "system", entry = "djlint --reformat --profile askama", types_or = ["html"] },
+]
+
+[[repos]]
+repo = "https://github.com/rbubley/mirrors-prettier"
+rev = "v3.5.2"
+hooks = [
+  { id = "prettier", types_or = ["css", "dockerfile"] },
+]
